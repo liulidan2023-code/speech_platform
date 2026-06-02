@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>教师中心</title>
+
+    <style>
+
+        body{
+
+            font-family:"Microsoft YaHei",sans-serif;
+
+            background:#f5f7fa;
+
+            text-align:center;
+
+            margin:0;
+
+            padding:40px;
+        }
+
+        h1{
+
+            color:#2c3e50;
+
+            margin-bottom:40px;
+        }
+
+        .container{
+
+            max-width:700px;
+
+            margin:auto;
+        }
+
+        .card{
+
+            background:white;
+
+            margin-bottom:25px;
+
+            padding:25px;
+
+            border-radius:15px;
+
+            box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .card h2{
+
+            color:#34495e;
+
+            margin-bottom:10px;
+        }
+
+        .card p{
+
+            color:#666;
+
+            margin-bottom:20px;
+        }
+
+        button{
+
+            width:220px;
+
+            height:50px;
+
+            border:none;
+
+            border-radius:8px;
+
+            background:#3498db;
+
+            color:white;
+
+            font-size:18px;
+
+            cursor:pointer;
+        }
+
+        button:hover{
+
+            background:#2980b9;
+        }
+
+        .home-btn{
+
+            background:#27ae60;
+        }
+
+        .home-btn:hover{
+
+            background:#219150;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>👨‍🏫 教师中心</h1>
+
+<div class="container">
+
+    <!-- 生成录音 -->
+
+    <div class="card">
+
+        <h2>🎤 生成标准录音</h2>
+
+        <p>
+            输入朗读材料，自动生成标准普通话录音
+        </p>
+
+        <a href="/generate">
+
+            <button>
+
+                生成录音
+
+            </button>
+
+        </a>
+
+    </div>
+
+
+    <!-- 班级管理 -->
+
+    <div class="card">
+
+        <h2>🏫 班级管理</h2>
+
+        <p>
+            添加班级并管理学生提交作业
+        </p>
+
+        <a href="/class_manage">
+
+            <button>
+
+                班级管理
+
+            </button>
+
+        </a>
+
+    </div>
+
+
+    <!-- 查看作业 -->
+
+    <div class="card">
+
+        <h2>📁 学生作业</h2>
+
+        <p>
+            按班级查看并播放学生录音
+        </p>
+
+        <a href="/teacher">
+
+            <button>
+
+                查看作业
+
+            </button>
+
+        </a>
+
+    </div>
+
+
+    <!-- 返回首页 -->
+
+    <div class="card">
+
+        <h2>🏠 返回首页</h2>
+
+        <p>
+            返回平台首页
+        </p>
+
+        <a href="/">
+
+            <button class="home-btn">
+
+                返回首页
+
+            </button>
+
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

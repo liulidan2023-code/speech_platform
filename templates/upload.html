@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>汉语朗读作业</title>
+
+<style>
+
+body{
+    font-family:"Microsoft YaHei",sans-serif;
+    background:#f5f7fa;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#2c3e50;
+}
+
+.card{
+    margin-top:25px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:bold;
+}
+
+input,
+select{
+    width:100%;
+    height:45px;
+    font-size:16px;
+    margin-bottom:20px;
+    padding-left:10px;
+    box-sizing:border-box;
+}
+
+input[type="file"]{
+    padding-top:10px;
+}
+
+button{
+    width:100%;
+    height:50px;
+    border:none;
+    border-radius:8px;
+    background:#3498db;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#2980b9;
+}
+
+audio{
+    width:100%;
+}
+
+.tip{
+    color:#666;
+    font-size:14px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎙 汉语朗读作业</h1>
+
+<div class="card">
+
+<h3>教师标准录音</h3>
+
+<p class="tip">
+请先收听教师标准录音，然后完成朗读并上传。
+</p>
+
+<audio controls>
+
+    <source
+    src="/static/teacher_audio/teacher.mp3"
+    type="audio/mpeg">
+
+</audio>
+
+</div>
+
+<form
+action="/upload"
+method="POST"
+enctype="multipart/form-data">
+
+<div class="card">
+
+<label>选择班级</label>
+
+<select name="class_name" required>
+
+<option value="">
+请选择班级
+</option>
+
+{% for c in classes %}
+
+<option value="{{ c }}">
+{{ c }}
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="card">
+
+<label>学生姓名</label>
+
+<input
+type="text"
+name="student_name"
+placeholder="请输入姓名"
+required>
+
+</div>
+
+<div class="card">
+
+<label>上传录音</label>
+
+<input
+type="file"
+name="audio"
+accept=".mp3,.wav,.m4a"
+required>
+
+</div>
+
+<button type="submit">
+
+提交朗读作业
+
+</button>
+
+</form>
+
+</div>
+
+</body>
+
+</html>
