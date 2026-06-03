@@ -1,13 +1,14 @@
-
 import os
 import asyncio
 import edge_tts
+from datetime import datetime
 
 from flask import Flask
 from flask import render_template
 from flask import request
 from flask import redirect
 from flask import session
+from flask import send_from_directory
 
 # =========================
 # Flask
@@ -27,19 +28,47 @@ TEACHER_PASSWORD = "123456"
 # 路径配置
 # =========================
 
-TEACHER_AUDIO = "static/teacher_audio"
-STUDENT_AUDIO = "static/student_audio"
-CLASS_FILE = "classes.txt"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-os.makedirs(TEACHER_AUDIO, exist_ok=True)
-os.makedirs(STUDENT_AUDIO, exist_ok=True)
+TEACHER_AUDIO = os.path.join(
+    BASE_DIR,
+    "static",
+    "teacher_audio"
+)
+
+STUDENT_AUDIO = os.path.join(
+    BASE_DIR,
+    "static",
+    "student_audio"
+)
+
+CLASS_FILE = os.path.join(
+    BASE_DIR,
+    "classes.txt"
+)
+
+os.makedirs(
+    TEACHER_AUDIO,
+    exist_ok=True
+)
+
+os.makedirs(
+    STUDENT_AUDIO,
+    exist_ok=True
+)
 
 if not os.path.exists(CLASS_FILE):
-    with open(CLASS_FILE, "w", encoding="utf-8"):
+
+    with open(
+        CLASS_FILE,
+        "w",
+        encoding="utf-8"
+    ):
         pass
 
+
 # =========================
-# 班级管理函数
+# 班级管理
 # =========================
 
 def load_classes():
@@ -47,7 +76,11 @@ def load_classes():
     if not os.path.exists(CLASS_FILE):
         return []
 
-    with open(CLASS_FILE, "r", encoding="utf-8") as f:
+    with open(
+        CLASS_FILE,
+        "r",
+        encoding="utf-8"
+    ) as f:
 
         return [
             line.strip()
@@ -92,7 +125,7 @@ def index():
 
 
 # =========================
-# 教师登录
+# 登录
 # =========================
 
 @app.route("/login", methods=["GET", "POST"])
@@ -105,8 +138,7 @@ def login():
 
         if (
             username == TEACHER_USERNAME
-            and
-            password == TEACHER_PASSWORD
+            and password == TEACHER_PASSWORD
         ):
 
             session["teacher"] = True
@@ -117,7 +149,7 @@ def login():
 
 
 # =========================
-# 退出登录
+# 退出
 # =========================
 
 @app.route("/logout")
@@ -136,14 +168,15 @@ def logout():
 def teacher_home():
 
     if not session.get("teacher"):
-
         return redirect("/login")
 
-    return render_template("teacher_home.html")
+    return render_template(
+        "teacher_home.html"
+    )
 
 
 # =========================
-# 教师生成录音
+# TTS生成录音
 # =========================
 
 @app.route("/generate", methods=["GET", "POST"])
@@ -154,41 +187,64 @@ def generate():
 
     if request.method == "POST":
 
-        text = request.form["text"]
+        try:
 
-        output_path = os.path.join(
-            TEACHER_AUDIO,
-            "teacher.mp3"
-        )
+            text = request.form["text"]
 
-        asyncio.run(
-            create_tts(text, output_path)
-        )
+            output_path = os.path.join(
+                TEACHER_AUDIO,
+                "teacher.mp3"
+            )
 
-        return redirect("/teacher_home")
+            asyncio.run(
+                create_tts(
+                    text,
+                    output_path
+                )
+            )
 
-    return render_template("generate.html")
+            return """
+            <h2>录音生成成功！</h2>
+            <a href='/teacher_home'>
+            返回教师中心
+            </a>
+            """
+
+        except Exception as e:
+
+            return f"""
+            <h2>录音生成失败</h2>
+            <pre>{str(e)}</pre>
+            """
+
+    return render_template(
+        "generate.html"
+    )
 
 
-# =========================
-# edge-tts
-# =========================
-
-async def create_tts(text, output_path):
+async def create_tts(
+    text,
+    output_path
+):
 
     communicate = edge_tts.Communicate(
         text=text,
         voice="zh-CN-XiaoxiaoNeural"
     )
 
-    await communicate.save(output_path)
+    await communicate.save(
+        output_path
+    )
 
 
 # =========================
 # 班级管理
 # =========================
 
-@app.route("/class_manage", methods=["GET", "POST"])
+@app.route(
+    "/class_manage",
+    methods=["GET", "POST"]
+)
 def class_manage():
 
     if not session.get("teacher"):
@@ -196,35 +252,47 @@ def class_manage():
 
     if request.method == "POST":
 
-        class_name = request.form["class_name"]
+        class_name = request.form[
+            "class_name"
+        ]
 
         save_class(class_name)
 
-        return redirect("/class_manage")
-
-    classes = load_classes()
+        return redirect(
+            "/class_manage"
+        )
 
     return render_template(
         "class_manage.html",
-        classes=classes
+        classes=load_classes()
     )
 
 
 # =========================
-# 学生上传录音
+# 学生上传
 # =========================
 
-@app.route("/upload", methods=["GET", "POST"])
+@app.route(
+    "/upload",
+    methods=["GET", "POST"]
+)
 def upload():
 
     classes = load_classes()
 
     if request.method == "POST":
 
-        class_name = request.form["class_name"]
-        student_name = request.form["student_name"]
+        class_name = request.form[
+            "class_name"
+        ]
 
-        audio = request.files["audio"]
+        student_name = request.form[
+            "student_name"
+        ]
+
+        audio = request.files[
+            "audio"
+        ]
 
         if audio:
 
@@ -242,7 +310,13 @@ def upload():
                 audio.filename
             )[1]
 
-            filename = f"{student_name}{ext}"
+            timestamp = datetime.now().strftime(
+                "%Y%m%d%H%M%S"
+            )
+
+            filename = (
+                f"{student_name}_{timestamp}{ext}"
+            )
 
             save_path = os.path.join(
                 class_folder,
@@ -254,7 +328,9 @@ def upload():
             return """
             <h2>上传成功！</h2>
             <br>
-            <a href='/'>返回上传页面</a>
+            <a href='/'>
+            返回上传页面
+            </a>
             """
 
     return render_template(
@@ -275,19 +351,21 @@ def teacher():
 
     result = {}
 
-    classes = load_classes()
-
-    for class_name in classes:
+    for class_name in load_classes():
 
         class_folder = os.path.join(
             STUDENT_AUDIO,
             class_name
         )
 
-        if os.path.exists(class_folder):
+        if os.path.exists(
+            class_folder
+        ):
 
             result[class_name] = sorted(
-                os.listdir(class_folder)
+                os.listdir(
+                    class_folder
+                )
             )
 
         else:
@@ -297,6 +375,33 @@ def teacher():
     return render_template(
         "teacher.html",
         data=result
+    )
+
+
+# =========================
+# 下载录音
+# =========================
+
+@app.route(
+    "/download/<class_name>/<filename>"
+)
+def download_audio(
+    class_name,
+    filename
+):
+
+    if not session.get("teacher"):
+        return redirect("/login")
+
+    folder = os.path.join(
+        STUDENT_AUDIO,
+        class_name
+    )
+
+    return send_from_directory(
+        folder,
+        filename,
+        as_attachment=True
     )
 
 
